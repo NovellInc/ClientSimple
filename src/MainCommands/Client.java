@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Client {
     public static void main(String[] args) throws IOException {
@@ -36,14 +35,12 @@ public class Client {
 
                 String userQuery = "",
                        serverResponse = "";
-                //timeout = Integer.parseInt(in.readLine());
-
 
                 while (true) {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     //fromServer.setSoTimeout(timeout);
                     System.out.print("Input query: ");
-                    userQuery = inUser.readLine() + " " + sdf.format(new Date());
+                    userQuery = inUser.readLine();// + " " + sdf.format(new Date());
                     out.println(userQuery);
                     if (userQuery.contains("close")) {
                         control.closeSession(out, in);
