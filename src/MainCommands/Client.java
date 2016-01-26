@@ -34,7 +34,7 @@ public class Client {
                 BufferedReader inUser = new BufferedReader(new InputStreamReader(System.in));
 
                 String userQuery = "",
-                       serverResponse = "";
+                       serverResponse = null;
 
                 while (true) {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -53,10 +53,7 @@ public class Client {
                         control.closeConnection(inUser, server);
                         System.exit(-1);
                     }
-
-                        serverResponse = in.readLine();
-                        System.out.println(serverResponse);
-
+                    new ResponseGetter(in, server).start();
                 }
                 System.out.print("Exit: 0\nContinue: press any key\n>>> ");
                 BufferedReader desicion = new BufferedReader(new InputStreamReader(System.in));
