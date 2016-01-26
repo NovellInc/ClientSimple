@@ -20,7 +20,7 @@ public class Client {
         String arg = "localhost";
         int timeout = 0;
 
-        Socket fromServer = null;
+        Socket server = null;
         ConnectionControl control = new ConnectionControl();
 
         while(true)
@@ -28,9 +28,9 @@ public class Client {
             System.out.println("Connecting to " + arg);
 
             try {
-                fromServer = new Socket("localhost", PORT);
-                PrintWriter out = new PrintWriter(fromServer.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(fromServer.getInputStream()));
+                server = new Socket("localhost", PORT);
+                PrintWriter out = new PrintWriter(server.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
                 BufferedReader inUser = new BufferedReader(new InputStreamReader(System.in));
 
                 String userQuery = "",
@@ -38,7 +38,7 @@ public class Client {
 
                 while (true) {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                    //fromServer.setSoTimeout(timeout);
+                    //server.setSoTimeout(timeout);
                     System.out.print("Input query: ");
                     userQuery = inUser.readLine();// + " " + sdf.format(new Date());
                     out.println(userQuery);
@@ -50,23 +50,25 @@ public class Client {
                     if (userQuery.contains("exit")) {
                         control.closeSession(out, in);
                         System.out.println("Client shut down");
-                        control.closeConnection(inUser, fromServer);
+                        control.closeConnection(inUser, server);
                         System.exit(-1);
                     }
-                    serverResponse = in.readLine();
-                    System.out.println(serverResponse);
+
+                        serverResponse = in.readLine();
+                        System.out.println(serverResponse);
+
                 }
                 System.out.print("Exit: 0\nContinue: press any key\n>>> ");
                 BufferedReader desicion = new BufferedReader(new InputStreamReader(System.in));
                 desicion.readLine();
 
                 if(desicion.equals("0")) {
-                    control.closeConnection(inUser, fromServer);
+                    control.closeConnection(inUser, server);
                     System.exit(-1);
                 }
 
             } catch (IOException e) {
-                System.out.println("No connection");
+                System.out.println("No connection. Error "+e.toString());
             }
         }
 

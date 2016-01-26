@@ -15,8 +15,8 @@ class ConnectionControl {
         in.close();
     }
 
-    public void closeConnection(BufferedReader inUser, Socket fromServer) throws IOException {
+    public void closeConnection(BufferedReader inUser, Socket Server) throws IOException {
         inUser.close();
-        fromServer.close();
+        Server.close();
     }
 }
