@@ -39,27 +39,32 @@ public class Client {
                 while (true) {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     //server.setSoTimeout(timeout);
-                    System.out.print("Input query: ");
+                    System.out.println("Choose command below.");
+                    System.out.print("1.Build: ");
+                    System.out.println("11.House 12.Civil 13.Enterprise");
+                    System.out.println("2.Player statistic");
                     userQuery = inUser.readLine();// + " " + sdf.format(new Date());
                     out.println(userQuery);
                     if (userQuery.contains("close")) {
                         control.closeSession(out, in);
                         System.out.println("Connection closed");
                         break;
-                    }
+                    } else
                     if (userQuery.contains("exit")) {
                         control.closeSession(out, in);
                         System.out.println("Client shut down");
                         control.closeConnection(inUser, server);
                         System.exit(-1);
                     }
+                    in = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     new ResponseGetter(in, server).start();
+
                 }
                 System.out.print("Exit: 0\nContinue: press any key\n>>> ");
-                BufferedReader desicion = new BufferedReader(new InputStreamReader(System.in));
-                desicion.readLine();
+                BufferedReader decision = new BufferedReader(new InputStreamReader(System.in));
+                decision.readLine();
 
-                if(desicion.equals("0")) {
+                if(decision.equals("0")) {
                     control.closeConnection(inUser, server);
                     System.exit(-1);
                 }
