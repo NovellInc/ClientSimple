@@ -10,9 +10,13 @@ import java.net.Socket;
  */
 class ConnectionControl {
 
-    public void closeSession(PrintWriter out, BufferedReader in) throws IOException {
-        out.close();
-        in.close();
+    public void closeSession(PrintWriter printWriter, BufferedReader bufferedReader) throws IOException {
+        printWriter.close();
+        bufferedReader.close();
+    }
+
+    public void closeSession(BufferedReader bufferedReader) throws IOException {
+        bufferedReader.close();
     }
 
     public void closeConnection(BufferedReader inUser, Socket Server) throws IOException {

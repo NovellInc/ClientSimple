@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
+import java.net.SocketTimeoutException;
+import java.rmi.ServerException;
 
 public class Client {
     public static void main(String[] args) throws IOException {
@@ -22,11 +23,11 @@ public class Client {
 
         Socket server = null;
         ConnectionControl control = new ConnectionControl();
-
+        int tryConnect = 0;
         while(true)
         {
             System.out.println("Connecting to " + arg);
-
+            tryConnect++;
             try {
                 server = new Socket("localhost", PORT);
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
@@ -37,13 +38,18 @@ public class Client {
                        serverResponse = null;
 
                 while (true) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                    //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     //server.setSoTimeout(timeout);
+                    tryConnect = 0;
                     System.out.println("Choose command below.");
                     System.out.print("1.Build: ");
                     System.out.println("11.House 12.Civil 13.Enterprise");
                     System.out.println("2.Player statistic");
                     userQuery = inUser.readLine();// + " " + sdf.format(new Date());
+                    if(server.isClosed()) {
+                        System.out.println("No connection.");
+                        System.exit(-1);
+                    }
                     out.println(userQuery);
                     if (userQuery.contains("close")) {
                         control.closeSession(out, in);
@@ -69,8 +75,17 @@ public class Client {
                     System.exit(-1);
                 }
 
+            } catch (ServerException se) {
+                System.out.println("ServerException error: " + se.toString());
+            } catch (SocketTimeoutException ste) {
+                System.out.println("SocketTimeoutException error: " + ste.toString());
             } catch (IOException e) {
                 System.out.println("No connection. Error "+e.toString());
+            }
+
+            if(tryConnect == 5) {
+                System.out.println("Client shut down");
+                break;
             }
         }
 
