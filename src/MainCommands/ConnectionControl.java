@@ -23,4 +23,11 @@ class ConnectionControl {
         inUser.close();
         Server.close();
     }
+
+    public Socket checkConnection(Socket server, String HOST, int PORT) throws IOException {
+        if(server.isClosed() && !server.isConnected()) {
+            server = new Socket(HOST, PORT);
+        }
+        return server;
+    }
 }

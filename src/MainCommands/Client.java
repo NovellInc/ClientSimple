@@ -18,39 +18,42 @@ public class Client {
         final int PORT = 4444;
 
         System.out.println("Welcome to Client side");
-        String arg = "localhost";
+        String HOST = "localhost";
         int timeout = 0;
 
         Socket server = null;
         ConnectionControl control = new ConnectionControl();
+        PrintWriter out;
+        BufferedReader in;
+        BufferedReader inUser;
         int tryConnect = 0;
+
         while(true)
         {
-            System.out.println("Connecting to " + arg);
+            System.out.println("Connecting to " + HOST);
             tryConnect++;
             try {
-                server = new Socket("localhost", PORT);
-                PrintWriter out = new PrintWriter(server.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                BufferedReader inUser = new BufferedReader(new InputStreamReader(System.in));
-
                 String userQuery = "",
                        serverResponse = null;
-
+                server = new Socket(HOST, PORT);
                 while (true) {
                     //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     //server.setSoTimeout(timeout);
+                    server = control.checkConnection(server, HOST, PORT);
+
+                    out = new PrintWriter(server.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                    inUser = new BufferedReader(new InputStreamReader(System.in));
+
                     tryConnect = 0;
                     System.out.println("Choose command below.");
                     System.out.print("1.Build: ");
                     System.out.println("11.House 12.Civil 13.Enterprise");
                     System.out.println("2.Player statistic");
-                    userQuery = inUser.readLine();// + " " + sdf.format(new Date());
-                    if(server.isClosed()) {
-                        System.out.println("No connection.");
-                        System.exit(-1);
-                    }
+                    userQuery = inUser.readLine();
+
                     out.println(userQuery);
+
                     if (userQuery.contains("close")) {
                         control.closeSession(out, in);
                         System.out.println("Connection closed");
@@ -61,10 +64,10 @@ public class Client {
                         System.out.println("Client shut down");
                         control.closeConnection(inUser, server);
                         System.exit(-1);
+                    } else {
+                        in = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                        new ResponseGetter(in, server).start();
                     }
-                    in = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    new ResponseGetter(in, server).start();
-
                 }
                 System.out.print("Exit: 0\nContinue: press any key\n>>> ");
                 BufferedReader decision = new BufferedReader(new InputStreamReader(System.in));
@@ -81,6 +84,10 @@ public class Client {
                 System.out.println("SocketTimeoutException error: " + ste.toString());
             } catch (IOException e) {
                 System.out.println("No connection. Error "+e.toString());
+            } catch (IllegalArgumentException iae) {
+                System.out.println("Connection failed. Error: " + iae.toString());
+                iae.printStackTrace();
+                System.exit(-1);
             }
 
             if(tryConnect == 5) {
